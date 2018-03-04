@@ -1,0 +1,46 @@
+<html>
+
+<head>
+
+  <title>Graphics Canvas Helper</title>
+
+  <style>
+  #draw-canvas {
+    border: 1px solid #000;
+  }
+  </style>
+
+</head>
+
+<body>
+
+  <canvas id="draw-canvas" width="500" height="500" />
+
+  <script>
+
+    const canvas = document.getElementById("draw-canvas");
+    const context = canvas.getContext("2d");
+
+    let shouldCompleteLine = false;
+    let previousLocation = [0, 0]
+
+    canvas.addEventListener('click', function(e) {
+      if (shouldCompleteLine) {
+        context.beginPath();
+        context.moveTo(previousLocation[0], previousLocation[1]);
+        context.lineTo(e.clientX, e.clientY);
+        context.stroke();
+      }
+
+      context.beginPath(); 
+      context.arc(e.clientX - 2, e.clientY - 2, 4, 0, 2 * Math.PI, false);
+      context.fillStyle = 'red';
+      context.fill();
+      previousLocation = [e.clientX, e.clientY]
+
+      shouldCompleteLine = true;
+    });
+
+  </script>
+
+</body>
