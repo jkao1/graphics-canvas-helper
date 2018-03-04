@@ -8,28 +8,43 @@
   #draw-canvas {
     border: 1px solid #000;
   }
+
+  .container {
+    display: flex;
+  }
+
+  #log {
+    padding-left: 20px;
+  }
   </style>
 
 </head>
 
 <body>
 
-  <canvas id="draw-canvas" width="500" height="500" />
+  <div class="container">
+    <canvas id="draw-canvas" width="500" height="500"></canvas>
+    <div id="log"></div>
+  </div>
 
   <script>
 
-    const canvas = document.getElementById("draw-canvas");
-    const context = canvas.getContext("2d");
+    const canvas = document.getElementById('draw-canvas');
+    const log = document.getElementById('log')
+    const context = canvas.getContext('2d');
 
     let shouldCompleteLine = false;
     let previousLocation = [0, 0]
 
     canvas.addEventListener('click', function(e) {
-      if (shouldCompleteLine) {
+      if (shouldCompleteLine) {        
         context.beginPath();
         context.moveTo(previousLocation[0], previousLocation[1]);
         context.lineTo(e.clientX, e.clientY);
         context.stroke();
+        log.innerHTML += `line<br/>
+          ${previousLocation[0]} ${previousLocation[1]} 0 
+          ${e.clientX} ${e.clientY} 0 <br/>`;
       }
 
       context.beginPath(); 
@@ -40,6 +55,10 @@
 
       shouldCompleteLine = true;
     });
+
+    canvas.addEventListener('dblclick', function(e) {
+      shouldCompleteLine = false;
+    })
 
   </script>
 
