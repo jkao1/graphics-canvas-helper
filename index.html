@@ -7,6 +7,7 @@
   <style>
   #draw-canvas {
     border: 1px solid #000;
+    height: 500px;
   }
 
   .container {
@@ -24,7 +25,11 @@
 
   <div class="container">
     <canvas id="draw-canvas" width="500" height="500"></canvas>
+    <img id="gopher" style="display: none" src="https://camo.githubusercontent.com/98ed65187a84ecf897273d9fa18118ce45845057/68747470733a2f2f7261772e6769746875622e636f6d2f676f6c616e672d73616d706c65732f676f706865722d766563746f722f6d61737465722f676f706865722e706e67" />
     <div id="log"></div>
+    <div>
+      display<br>save<br>pic.png<br>
+    </div>
   </div>
 
   <script>
@@ -33,32 +38,58 @@
     const log = document.getElementById('log')
     const context = canvas.getContext('2d');
 
-    let shouldCompleteLine = false;
-    let previousLocation = [0, 0]
+    window.onload = function() {
+      var img = document.getElementById('gopher');
+      drawImageScaled(img, context);
+    };
 
-    canvas.addEventListener('click', function(e) {
+    let shouldCompleteLine = false;
+    let previousLocation = [0, 0];
+
+    setInterval(function(){ drawDot() }, 400);
+
+    var cursorX;
+    var cursorY;
+    document.onmousemove = function(e){
+      cursorX = e.pageX;
+      cursorY = e.pageY;
+    }
+
+    function drawDot() {
       if (shouldCompleteLine) {        
         context.beginPath();
         context.moveTo(previousLocation[0], previousLocation[1]);
-        context.lineTo(e.clientX, e.clientY);
+        context.lineTo(cursorX - 4, cursorY - 4);
         context.stroke();
         log.innerHTML += `line<br/>
-          ${previousLocation[0]} ${previousLocation[1]} 0 
-          ${e.clientX} ${e.clientY} 0 <br/>`;
+          ${previousLocation[0]} ${500-previousLocation[1]} 0 
+          ${cursorX} ${500-cursorY} 0 <br/>`;
       }
 
       context.beginPath(); 
-      context.arc(e.clientX - 2, e.clientY - 2, 4, 0, 2 * Math.PI, false);
+      context.arc(cursorX - 4, cursorY - 4, 4, 0, 2 * Math.PI, false);
       context.fillStyle = 'red';
       context.fill();
-      previousLocation = [e.clientX, e.clientY]
+      previousLocation = [cursorX - 4, cursorY - 4]
 
       shouldCompleteLine = true;
-    });
+    }
 
     canvas.addEventListener('dblclick', function(e) {
       shouldCompleteLine = false;
-    })
+    });
+
+    function drawImageScaled(img, ctx) {
+      var canvas = ctx.canvas ;
+      var hRatio = canvas.width  / img.width    ;
+      var vRatio =  canvas.height / img.height  ;
+      var ratio  = Math.min ( hRatio, vRatio );
+      var centerShift_x = ( canvas.width - img.width*ratio ) / 2;
+      var centerShift_y = ( canvas.height - img.height*ratio ) / 2;  
+      ctx.clearRect(0,0,canvas.width, canvas.height);
+      ctx.drawImage(img, 0,0, img.width, img.height,
+                     centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);  
+    }
 
   </script>
 
